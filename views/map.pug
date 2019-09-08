@@ -4,6 +4,8 @@ block append head
     link(rel="stylesheet" href="/vendor/leaflet/leaflet.css")
     //- TODO: Change to minified leaflet.js
     script(src="/vendor/leaflet/leaflet-src.js")
+    script(src="/vendor/leaflet-providers/leaflet-providers.js")
 
 block content
-    p Map here
+    div(class='map' id='map')
+    script(src="/javascripts/map.js")

@@ -19,9 +19,11 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
 app.use('/vendor/leaflet', express.static(path.join(__dirname, 'node_modules/leaflet/dist')));
+app.use('/vendor/leaflet-providers', express.static(path.join(__dirname, 'node_modules/leaflet-providers')));
+app.use(express.static(path.join(__dirname, 'public')));
 
+// Our actual pages.
 app.use('/', indexRouter);
 app.use('/map', mapRouter);
 
