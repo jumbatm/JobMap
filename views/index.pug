@@ -1,5 +1,8 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+    p Search for content:
+    form(action="/map" method="GET")
+        input(type="text" name="keywords" placeholder="")
+        input(type="text" name="address" placeholder="")
+        input(type="submit")

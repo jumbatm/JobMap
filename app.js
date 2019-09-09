@@ -16,8 +16,7 @@ app.set('view engine', 'pug');
 
 app.use(helmet());
 app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use('/vendor/leaflet', express.static(path.join(__dirname, 'node_modules/leaflet/dist')));
 app.use('/vendor/leaflet-providers', express.static(path.join(__dirname, 'node_modules/leaflet-providers')));
