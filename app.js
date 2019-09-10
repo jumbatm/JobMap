@@ -6,7 +6,7 @@ const logger = require('morgan');
 const helmet = require('helmet');
 
 const indexRouter = require('./routes/index');
-const mapRouter = require('./routes/map');
+const apiRouter = require('./routes/api');
 
 const app = express();
 
@@ -18,13 +18,18 @@ app.use(helmet());
 app.use(logger('dev'));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use('/vendor/leaflet', express.static(path.join(__dirname, 'node_modules/leaflet/dist')));
-app.use('/vendor/leaflet-providers', express.static(path.join(__dirname, 'node_modules/leaflet-providers')));
-app.use(express.static(path.join(__dirname, 'public')));
 
 // Our actual pages.
 app.use('/', indexRouter);
-app.use('/map', mapRouter);
+
+// Mounted vendors.
+app.use('/vendor/leaflet', express.static(path.join(__dirname, 'node_modules/leaflet/dist')));
+app.use('/vendor/leaflet-providers', express.static(path.join(__dirname, 'node_modules/leaflet-providers')));
+app.use('/vendor/jquery', express.static(path.join(__dirname, 'node_modules/jquery/dist')));
+app.use(express.static(path.join(__dirname, 'public'))); 
+
+// Mounted API endpoint.
+app.use('/api', apiRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

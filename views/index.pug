@@ -1,12 +1,17 @@
 extends layout
 
+block append head
+    link(rel="stylesheet" href="/vendor/leaflet/leaflet.css")
+    //- TODO: Change to minified leaflet.js
+    script(src="/vendor/leaflet/leaflet-src.js")
+    script(src="/vendor/leaflet-providers/leaflet-providers.js")
+
 block content
-    p Search for content:
-    form(action="/map" method="GET")
-        | Seach query
-        input(type="text" name="keywords" placeholder="")
-        br
-        | Your address
-        input(type="text" name="address" placeholder="")
-        br
-        input(type="submit")
+    include search
+    div(class='map' id='map')
+    script(src="/javascripts/map.js")
+    <script>renderMap(#{latitude}, #{longitude})</script>
+
+
+
+            
