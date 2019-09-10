@@ -8,6 +8,7 @@ function renderMap(lat, lon) {
 function onFormSubmit() {
   const keywords = document.querySelector("#form_keywords").value;
   const address = document.querySelector("#form_address").value;
+  document.querySelector("#form_submit").classList.add("spinning");
   $.ajax({
     url: "/api",
     type: "GET",
@@ -16,6 +17,7 @@ function onFormSubmit() {
       address: address,
     },
     success: function(response) {
+      document.querySelector("#form_submit").classList.remove("spinning");
       renderMap(response.lat, response.lon);
     }
   });
