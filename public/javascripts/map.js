@@ -1,2 +1,4 @@
-var map = L.map('map').setView([51.505, -0.09], 13);
-L.tileLayer.provider('OpenStreetMap.Mapnik').addTo(map);
+function renderMap(lat, lon) {
+  var map = L.map('map').setView([lat, lon], 13);
+  L.tileLayer.provider('OpenStreetMap.Mapnik').addTo(map);
+}

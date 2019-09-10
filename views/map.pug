@@ -9,6 +9,12 @@ block append head
 block content
     p Map placeholder here. Your parameters were:
     p Your address: #{address}
-    p Your job keywords: #{keywords}
-//-div(class='map' id='map')
-//-script(src="/javascripts/map.js")
+    p This was geocoded to: (#{latitude}, #{longitude})
+    p Looking for jobs with words: #{keywords}
+    div(class='map' id='map')
+    script(src="/javascripts/map.js")
+    <script>renderMap(#{latitude}, #{longitude})</script>
+
+
+
+            

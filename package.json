@@ -15,6 +15,7 @@
     "leaflet": "^1.5.1",
     "leaflet-providers": "^1.9.0",
     "morgan": "~1.9.1",
+    "nominatim": "^0.1.0",
     "pug": "^2.0.4"
   }
 }

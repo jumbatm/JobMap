@@ -3,6 +3,10 @@ extends layout
 block content
     p Search for content:
     form(action="/map" method="GET")
+        | Seach query
         input(type="text" name="keywords" placeholder="")
+        br
+        | Your address
         input(type="text" name="address" placeholder="")
+        br
         input(type="submit")
