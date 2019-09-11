@@ -6,10 +6,8 @@ const geo = require('../lib/geo');
 router.get('/', function(req, res, next) {
   const DEFAULT_LATITUDE = "-27.470125";
   const DEFAULT_LONGITUDE = "153.021072";
-  console.log(req.connection.remoteAddress);
 
   geo.geoLocate(req.ip).then(function(point) {
-    console.log(point);
     res.render('index', { 
       address: req.query.address, 
       keywords: req.query.keywords, 
