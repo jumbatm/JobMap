@@ -3,14 +3,12 @@ const express = require('express');
 const router = express.Router();
 const geo = require('../lib/geo');
 
-router.get('/', function (req, res, next) {
+router.get('/', function (req, res, _) {
   geo.geocode(req.query.address)
-    .then(function(response) { 
-      let nomData = response.data[0];
-      // TODO: Handle errors.
+    .then(function(point) { 
       res.json({
-        lat: nomData.lat,
-        lon: nomData.lon,
+        lat: point.getLatitude(),
+        lon: point.getLongitude(),
         listings: [],
       });
     })
