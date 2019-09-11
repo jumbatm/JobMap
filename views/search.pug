@@ -2,11 +2,12 @@ extends layout
 
 block content
     script(src="/vendor/jquery/jquery.js")
-    p Search for content:
-    | Search query
-    input(type="text" id="form_keywords" placeholder="")
-    br
-    | Your address
-    input(type="text" id="form_address" placeholder="")
-    br
-    input(type="submit" id="form_submit" onclick="onFormSubmit()")
+    form(onsubmit="onFormSubmit(); return false;")
+        p Search for content:
+        | Search query
+        input(type="text" id="form_keywords" placeholder="")
+        br
+        | Your address
+        input(type="text" id="form_address" placeholder="")
+        br
+        input(type="submit" id="form_submit" )
