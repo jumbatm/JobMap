@@ -18,6 +18,7 @@ function onFormSubmit() {
     },
     success: function(response) {
       document.querySelector("#form_submit").classList.remove("spinning");
+      console.log(response);
       renderMap(response.lat, response.lon);
     }
   });
