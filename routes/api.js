@@ -4,6 +4,10 @@ const router = express.Router();
 const geo = require('../lib/geo');
 const job = require('../lib/job');
 const ors = require('../lib/ors');
+const pug = require('pug');
+const path = require('path');
+
+const jobRenderer = pug.compileFile(path.join(__dirname, '../views/job.pug'));
 
 class ProcessedListing extends job.Job {
   constructor(name, position, description, suburb, lat, lng, time) {
@@ -13,6 +17,8 @@ class ProcessedListing extends job.Job {
     this._time = time;
   }
   getTime() { return this._time; }
+  getLatitude() { return this._lat; }
+  getLongitude() { return this._lng; }
 }
 
 router.get('/', function (req, res, _) {
@@ -23,40 +29,101 @@ router.get('/', function (req, res, _) {
       let listings_promises = values[1].map(l => {
         return new Promise(
           (resolve, reject) => { 
-            geo.geocode(l.getSuburb()).then(value => { 
-              ors.routeBetween(
-                process.env.ORS_API_KEY, 
-                point,
-                value)
-                .then(value => {
-                  let time = value.data.routes[0].summary.duration;
-                  console.log(time);
-                  resolve(new ProcessedListing(
-                    l.getName(),
-                    l.getPosition(), 
-                    l.getDesc(), 
-                    l.getSuburb(),
-                    time
-                  ));
-                }).catch(e => reject(e));
-            }).catch(e => reject(e))/* goecode*/
+            geo.geocode(l.getSuburb()).then(suburbPoint => { 
+                ors.routeBetween(
+                  process.env.ORS_API_KEY, 
+                  point,
+                  suburbPoint)
+                  .then(value => {
+                    let time = value.data.routes[0].summary.duration;
+                    console.log(time);
+                    resolve(new ProcessedListing(
+                      l.getName(),
+                      l.getPosition(), 
+                      l.getDesc(), 
+                      l.getSuburb(),
+                      suburbPoint.getLatitude(),
+                      suburbPoint.getLongitude(),
+                      time
+                    ));
+                  }).catch(e => reject(e));
+              }).catch(e => reject(e))/* goecode*/
           }
         )});
 
-      console.log(listings_promises);
       Promise.all(listings_promises).then(listings => {
-        console.log("Listings:");
-        console.log(listings);
-        res.json({
-          lat: point.getLatitude(),
-          lon: point.getLongitude(),
-          listings: listings,
+        listings = listings.sort((x, y) => {
+          // Sort by GPS coordinate.
+          let xp = x.getLatitude() + "#" + x.getLongitude();
+          let yp = y.getLatitude() + "#" + y.getLongitude();
+          if (xp === yp) {
+            return 0;
+          }
+          if (xp < yp) {
+            return 1;
+          }
+          if (xp > yp) {
+            return -1;
+          }
         });
-      })
-        .catch(e => console.log(e));
 
-    })
-    .catch(function(e) { console.log(e); });
+
+        // We now merge listings with the same lat/longitude.
+        let markers = listings.reduce((acc, current) => {
+          console.log("Reducing");
+          console.log(current);
+          let toJSON = function(jobListing) {
+            return {
+                name: jobListing.getName(),
+                position: jobListing.getPosition(),
+                description: jobListing.getDesc(),
+                suburb: jobListing.getSuburb(),
+                time: jobListing.getTime(),
+            };
+          };
+          console.log(acc.length);
+          let prev = acc.length !== 0 ? acc[acc.length-1] : undefined;
+          // acc: The new list.
+          if (acc.length !== 0 
+            && prev.lat === current.getLatitude() 
+            && prev.lng === current.getLongitude()) {
+            console.log("Appending");
+            // The values are the same. Therefore, we merge with the previous node.
+            prev.jobs.push(toJSON(current));
+          } else {
+            console.log("Creating");
+            // Values are unique. We append current to acc.
+            acc.push({
+              lat: current.getLatitude(),
+              lng: current.getLongitude(),
+              jobs: [toJSON(current)],
+            });
+            console.log("Done creating");
+          }
+          return acc;
+        }, []);
+
+        // Provide the full HTML for each of the markers..  
+        let rendered = markers.map((value) => {
+          return {
+            lat: value.lat,
+            lng: value.lng,
+            html: jobRenderer({
+              jobs: value.jobs
+            }),
+          }
+        });
+
+        res.json({
+          from: {
+            lat: point.getLatitude(),
+            lon: point.getLongitude(),
+          },
+          markers: rendered,
+        });
+      }).catch(e => console.log(e));
+
+    }).catch(function(e) { console.log(e); });
 });
 
 module.exports = router;

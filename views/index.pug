@@ -10,7 +10,7 @@ block content
     include search
     div(class='map' id='map')
     script(src="/javascripts/map.js")
-    <script>renderMap(#{latitude}, #{longitude})</script>
+    <script>initMap(); moveMapTo(#{latitude}, #{longitude});</script>
 
 
 

@@ -1,8 +1,38 @@
-let map = L.map('map');
-L.tileLayer.provider('OpenStreetMap.Mapnik').addTo(map);
+let map;
+let homeMarker;
+let markers;
 
-function renderMap(lat, lon) {
-    map.setView([lat, lon], 13); 
+function getMap() {
+  if (!map) {
+    initMap();
+    console.assert(map);
+  }
+  return map;
+}
+
+function initMap() {
+  if (map) {
+    map.remove();
+    map = homeMarker = markers = undefined;
+  }
+  map = L.map('map');
+  L.tileLayer.provider('OpenStreetMap.Mapnik').addTo(map);
+  markers = []
+
+}
+
+function moveMapTo(lat, lon) {
+  map.setView([lat, lon], 13);
+}
+
+function plotHome(homeLat, homeLon) {
+  homeMarker = L.marker([homeLat, homeLon]).addTo(getMap());
+}
+
+function addJobPopup(renderValue) {
+  markers.push(L.marker([renderValue.lat, renderValue.lng])
+    .bindPopup(renderValue.html)
+    .addTo(getMap()));
 }
 
 function onFormSubmit() {
@@ -19,7 +49,12 @@ function onFormSubmit() {
     success: function(response) {
       document.querySelector("#form_submit").classList.remove("spinning");
       console.log(response);
-      renderMap(response.lat, response.lon);
+      moveMapTo(response.from.lat, response.from.lon);
+      plotHome(response.from.lat, response.from.lon);
+      response.markers
+      .forEach(v => {
+        addJobPopup(v);
+      });
     }
   });
 }
