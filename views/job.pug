@@ -1,6 +1,7 @@
+h1 #{suburb}
+h2 #{Math.round(time % 60)} mins
 each job in jobs
-    h1 #{job.position}
-    h2 #{job.name}
-    h3 #{job.suburb}
-    b #{job.time}
+    hr
+    h3 #{job.position}
+    h4 #{job.name}
     p #{job.description}

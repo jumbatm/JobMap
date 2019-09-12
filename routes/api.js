@@ -47,7 +47,7 @@ router.get('/', function (req, res, _) {
                       time
                     ));
                   }).catch(e => reject(e));
-              }).catch(e => reject(e))/* goecode*/
+              }).catch(e => reject(e))
           }
         )});
 
@@ -77,8 +77,6 @@ router.get('/', function (req, res, _) {
                 name: jobListing.getName(),
                 position: jobListing.getPosition(),
                 description: jobListing.getDesc(),
-                suburb: jobListing.getSuburb(),
-                time: jobListing.getTime(),
             };
           };
           console.log(acc.length);
@@ -96,6 +94,8 @@ router.get('/', function (req, res, _) {
             acc.push({
               lat: current.getLatitude(),
               lng: current.getLongitude(),
+              suburb: current.getSuburb(),
+              time: current.getTime(),
               jobs: [toJSON(current)],
             });
             console.log("Done creating");
@@ -109,10 +109,14 @@ router.get('/', function (req, res, _) {
             lat: value.lat,
             lng: value.lng,
             html: jobRenderer({
-              jobs: value.jobs
+              jobs: value.jobs,
+              suburb: value.suburb,
+              time: value.time,
             }),
           }
         });
+
+        console.log(rendered);
 
         res.json({
           from: {
