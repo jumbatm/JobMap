@@ -22,9 +22,11 @@ class ProcessedListing extends job.Job {
 }
 
 router.get('/', function (req, res, _) {
-  Promise.all([ geo.geocode(req.query.address), job.getJobs(req.query.keywords)])
+  Promise.all([ geo.geocode(req.query.address), job.getJobs(req.query.keywords, req.query.address)])
     .then(values => {
       let point = values[0];
+
+      console.log(values[1]);
 
       let listings_promises = values[1].map(l => {
         return new Promise(
@@ -36,7 +38,6 @@ router.get('/', function (req, res, _) {
                   suburbPoint)
                   .then(value => {
                     let time = value.data.routes[0].summary.duration;
-                    console.log(time);
                     resolve(new ProcessedListing(
                       l.getName(),
                       l.getPosition(), 
@@ -70,8 +71,6 @@ router.get('/', function (req, res, _) {
 
         // We now merge listings with the same lat/longitude.
         let markers = listings.reduce((acc, current) => {
-          console.log("Reducing");
-          console.log(current);
           let toJSON = function(jobListing) {
             return {
                 name: jobListing.getName(),
@@ -79,17 +78,14 @@ router.get('/', function (req, res, _) {
                 description: jobListing.getDesc(),
             };
           };
-          console.log(acc.length);
           let prev = acc.length !== 0 ? acc[acc.length-1] : undefined;
           // acc: The new list.
           if (acc.length !== 0 
             && prev.lat === current.getLatitude() 
             && prev.lng === current.getLongitude()) {
-            console.log("Appending");
             // The values are the same. Therefore, we merge with the previous node.
             prev.jobs.push(toJSON(current));
           } else {
-            console.log("Creating");
             // Values are unique. We append current to acc.
             acc.push({
               lat: current.getLatitude(),
@@ -98,7 +94,6 @@ router.get('/', function (req, res, _) {
               time: current.getTime(),
               jobs: [toJSON(current)],
             });
-            console.log("Done creating");
           }
           return acc;
         }, []);
@@ -115,8 +110,6 @@ router.get('/', function (req, res, _) {
             }),
           }
         });
-
-        console.log(rendered);
 
         res.json({
           from: {

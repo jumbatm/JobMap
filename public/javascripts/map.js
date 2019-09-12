@@ -48,7 +48,6 @@ function onFormSubmit() {
     },
     success: function(response) {
       document.querySelector("#form_submit").classList.remove("spinning");
-      console.log(response);
       moveMapTo(response.from.lat, response.from.lon);
       plotHome(response.from.lat, response.from.lon);
       response.markers
