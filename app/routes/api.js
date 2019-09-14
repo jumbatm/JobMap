@@ -58,7 +58,6 @@ router.get('/', function (req, res, _) {
       });
       // Filter if a time limit exists on the request.
       if (req.query.timeLimit != 0) {
-        console.log(req.query.timeLimit);
         for (let key of Object.keys(result)) {
           if (result[key].duration > req.query.timeLimit*60) {
             delete result[key];

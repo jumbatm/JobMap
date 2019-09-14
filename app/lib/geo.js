@@ -28,7 +28,7 @@ function geocode(query) {
  *
  * @return A promise which resolves to a Point..
  */
-function geoLocate(ipAddress) {
+function geoLocate(ipAddress) { 
   if (ipAddress.includes("127.0.0.1") || ipAddress.includes("::1")) {
     return new Promise((resolve, _) => {
       resolve(null);
@@ -38,10 +38,11 @@ function geoLocate(ipAddress) {
     (resolve, reject) => {
       axios.get("http://ip-api.com/json/" + ipAddress)
         .then(
-          response => response.status === 200 
-          ? resolve(new Point(response.lat, response.lng))
-          : reject(response)
-        )
+          response => { 
+            return response.status === 200 
+            ? resolve(new Point(response.data.lat, response.data.lng))
+            : reject(response); 
+          })
         .catch(e => reject(e));
     });
 }
