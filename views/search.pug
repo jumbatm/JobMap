@@ -1,16 +1,15 @@
-script(src="/vendor/jquery/jquery.js")
-form(id="searchform" onsubmit="onFormSubmit(); return false;")
-    | Search for jobs containing:
-    input(type="text" id="form_keywords" placeholder="")
-    br
-    | Commuting from:
-    input(type="text" id="form_address" placeholder="" required)
-    br
-    | Filter commute time to:
-    select(id="timelimit", form="searchform")
-        option(value=0) No limit
-        option(value=15) Less than 15 minutes
-        option(value=30) Less than 30 minutes
-        option(value=60) Less than an hour
-    br
+form(class="p-3 form-horizontal" id="searchform" onsubmit="onFormSubmit(); return false;")
+    div(class="form-group")
+      label(for="form_keywords" class="col-sm-2 control-label") Search for jobs containing
+      input(class="form-control" type="text" id="form_keywords" placeholder="e.g. React")
+    div(class="form-group")
+      label(for="form_address" class="col-sm-2 control-label") Commuting from
+      input(class="form-control" type="text" id="form_address" placeholder="e.g. Eight Mile Plains" required)
+    div(class="form-group")
+      label(for="timelimit" class="col-sm-2 control-label") Limit commute time to
+      select(class="form-control" id="timelimit", form="searchform")
+          option(value=0) No limit
+          option(value=15) Less than 15 minutes
+          option(value=30) Less than 30 minutes
+          option(value=60) Less than an hour
     input(type="submit" id="form_submit" )

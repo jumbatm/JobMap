@@ -1,13 +1,10 @@
 extends layout
 
 block append head
-    link(rel="stylesheet" href="/vendor/leaflet/leaflet.css")
-    link(rel="stylesheet" href="/vendor/bootstrap/css/bootstrap.css")
     //- TODO: Change to minified leaflet.js
+    link(rel="stylesheet" href="/vendor/leaflet/leaflet.css")
     script(src="/vendor/leaflet/leaflet-src.js")
     script(src="/vendor/leaflet-providers/leaflet-providers.js")
-    script(src="/vendor/jquery/jquery.js")
-    script(src="/vendor/bootstrap/js/bootstrap.js")
 
 block content
     include search
