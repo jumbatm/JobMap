@@ -1,5 +1,4 @@
 let map;
-let homeMarker;
 let markers;
 
 function getMap() {
@@ -10,23 +9,25 @@ function getMap() {
   return map;
 }
 
+function clearMarkers() {
+  markers = markers || [];
+  markers.forEach(val => {
+    map.removeLayer(val);
+  });
+}
+
 function initMap() {
   if (map) {
     map.remove();
-    map = homeMarker = markers = undefined;
+    map = markers = undefined;
   }
   map = L.map('map');
   L.tileLayer.provider('OpenStreetMap.Mapnik').addTo(map);
-  markers = []
-
+  markers = [];
 }
 
 function moveMapTo(lat, lon) {
   map.setView([lat, lon], 13);
-}
-
-function plotHome(homeLat, homeLon) {
-  homeMarker = L.marker([homeLat, homeLon]).addTo(getMap());
 }
 
 function addJobPopup(renderValue) {
@@ -46,14 +47,15 @@ function onFormSubmit() {
       keywords: keywords,
       address: address,
     },
-    success: function(response) {
-      document.querySelector("#form_submit").classList.remove("spinning");
+  }).done(response => {
       moveMapTo(response.from.lat, response.from.lon);
-      plotHome(response.from.lat, response.from.lon);
+      clearMarkers();
       response.markers
-      .forEach(v => {
-        addJobPopup(v);
-      });
-    }
+        .forEach(v => {
+          addJobPopup(v);
+        })
+    })
+  .always((xhr, info) => {
+      document.querySelector("#form_submit").classList.remove("spinning");
   });
 }
