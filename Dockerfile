@@ -1,6 +1,6 @@
 FROM node:12
 MAINTAINER jonathan.fung@connect.qut.edu.au
-ADD . /app
+ADD ./app /app
 WORKDIR /app
 RUN npm install
 ENV PORT 80
