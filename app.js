@@ -26,6 +26,7 @@ app.use('/', indexRouter);
 app.use('/vendor/leaflet', express.static(path.join(__dirname, 'node_modules/leaflet/dist')));
 app.use('/vendor/leaflet-providers', express.static(path.join(__dirname, 'node_modules/leaflet-providers')));
 app.use('/vendor/jquery', express.static(path.join(__dirname, 'node_modules/jquery/dist')));
+app.use('/vendor/bootstrap', express.static(path.join(__dirname, 'node_modules/bootstrap/dist')))
 
 // Serve items statically in public.
 app.use(express.static(path.join(__dirname, 'public'))); 
