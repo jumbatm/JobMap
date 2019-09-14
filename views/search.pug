@@ -1,12 +1,12 @@
 script(src="/vendor/jquery/jquery.js")
 form(id="searchform" onsubmit="onFormSubmit(); return false;")
-    p Search for content:
-    | Search query
+    | Search for jobs containing:
     input(type="text" id="form_keywords" placeholder="")
     br
-    | Your address
+    | Commuting from:
     input(type="text" id="form_address" placeholder="" required)
     br
+    | Filter commute time to:
     select(id="timelimit", form="searchform")
         option(value=0) No limit
         option(value=15) Less than 15 minutes
