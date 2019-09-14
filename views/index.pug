@@ -11,4 +11,4 @@ block content
     div(id='error')
     div(class='map' id='map')
     script(src="/javascripts/map.js")
-    <script>initMap(); moveMapTo(#{latitude}, #{longitude});</script>
+    <script>initMap(); moveMapTo(#{latitude || 0}, #{longitude || 0});</script>

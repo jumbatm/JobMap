@@ -6,5 +6,5 @@ RUN npm install
 ENV PORT 80
 EXPOSE 80
 ENV NODE_ENV production
-ENTRYPOINT ["sh",  "-c", ". ./.env ; npm start"]
+CMD "./deploy.sh"
 # run with docker run -p 80:80 cab432:latest Dockerfile
