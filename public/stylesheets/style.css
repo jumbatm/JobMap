@@ -29,3 +29,8 @@ a {
     to { transform:rotate(359deg); }
 }
 
+.job {
+    height: 400px;
+    overflow: auto;
+}
+

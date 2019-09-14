@@ -1,7 +1,8 @@
-h1 #{suburb}
-h2 #{Math.round(time / 60)} mins
-each job in jobs
-    hr
-    h3 #{job.title}
-    p #{job.content}
-    a #{job.link}
+div(class='job')
+    h1 #{suburb}
+    h2 #{Math.round(time / 60)} mins
+    each job in jobs
+        hr
+        h3 #{job.title}
+        p #{job.content.length >= 100? job.content.slice(0, 97) + "..." : job.content}
+        a #{job.link}

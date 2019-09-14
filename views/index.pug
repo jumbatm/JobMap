@@ -8,10 +8,7 @@ block append head
 
 block content
     include search
+    div(id='error')
     div(class='map' id='map')
     script(src="/javascripts/map.js")
     <script>initMap(); moveMapTo(#{latitude}, #{longitude});</script>
-
-
-
-            

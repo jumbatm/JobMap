@@ -6,6 +6,7 @@ const job = require('../lib/job');
 const ors = require('../lib/ors');
 const pug = require('pug');
 const path = require('path');
+const entities = require('html-entities').AllHtmlEntities;
 
 const jobRenderer = pug.compileFile(path.join(__dirname, '../views/job.pug'));
 
@@ -54,7 +55,7 @@ router.get('/', function (req, res, _) {
             result[job.getSuburb()]["jobs"].push({
               title: job.getTitle(),
               link: job.getLink(),
-              content: job.getContent(),
+              content: entities.decode(job.getContent()),
             });
           });
 
