@@ -5,5 +5,5 @@ WORKDIR /app
 RUN npm install
 EXPOSE 80
 ENV PORT 80
-CMD ["npm", "start"]
+ENTRYPOINT ["npm", "start"]
 # run with docker run -p 80:80 cab432:latest Dockerfile
