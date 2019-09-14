@@ -5,4 +5,4 @@ div(class='job')
         hr
         h3 #{job.title}
         p #{job.content.length >= 100? job.content.slice(0, 97) + "..." : job.content}
-        a #{job.link}
+        a(target="_blank" href= job.link) #{job.link}
