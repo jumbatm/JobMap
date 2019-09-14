@@ -23,68 +23,72 @@ class ProcessedListing extends job.Job {
 }
 
 router.get('/', function (req, res, _) {
-  Promise.all([ geo.geocode(req.query.address), job.getJobs(req.query.keywords, req.query.address)])
-    .then(values => {
-      let homePoint = values[0];
+  let homePoint;
+  let points;
+  let uniquedSuburbs;
+  let values;
 
-      let uniquedSuburbs = [...new Set(values[1].map(l => l.getSuburb()))];
+  Promise.all([ geo.geocode(req.query.address), job.getJobs(req.query.keywords, req.query.address)])
+    .then(valuesResponse => {
+      values = valuesResponse;
+      homePoint = valuesResponse[0];
+
+      uniquedSuburbs = [...new Set(valuesResponse[1].map(l => l.getSuburb()))];
       let uniqueGeocodeWithPromise = 
         uniquedSuburbs.map(suburbName => {
           return geo.geocode(suburbName);
         });
 
-      Promise.all(uniqueGeocodeWithPromise).then(points => {
+      return Promise.all(uniqueGeocodeWithPromise);
+    }).then(pointsResponse => { 
+      points = pointsResponse;
+      // Now, fire off the bulk request for time taken for points.
+      return ors.bulkRouteBetween(process.env.ORS_API_KEY, 
+        [homePoint.getLongitude(), homePoint.getLatitude()],
+        pointsResponse.map(v => { return [ v.getLongitude(), v.getLatitude() ]; }),
+      );
+    }).then(response => {
+      const durations = response.durations;
 
-        // Now, fire off the bulk request for time taken for points.
-        ors.bulkRouteBetween(process.env.ORS_API_KEY, 
-          [homePoint.getLongitude(), homePoint.getLatitude()],
-          points.map(v => { return [ v.getLongitude(), v.getLatitude() ]; }),
-        ).then(response => {
-          const durations = response.durations;
+      let result = {};
+      points.forEach((point, i) => {
+        const suburbName = uniquedSuburbs[i];
+        const duration = durations[0][i];
+        result[suburbName] = { lat: point.getLatitude(), lng: point.getLongitude(), duration: duration, };
+      });
 
-          let result = {};
-          points.forEach((point, i) => {
-            const suburbName = uniquedSuburbs[i];
-            const duration = durations[0][i];
-            result[suburbName] = { lat: point.getLatitude(), lng: point.getLongitude(), duration: duration, };
-          });
+      // Now, we iterate through our jobs, and using the location of the job as a key, we append job information.
+      values[1].forEach(job => {
+        result[job.getSuburb()]["jobs"] = result[job.getSuburb()]["jobs"] || [];
+        result[job.getSuburb()]["jobs"].push({
+          title: job.getTitle(),
+          link: job.getLink(),
+          content: entities.decode(job.getContent()),
+        });
+      });
 
-          // Now, we iterate through our jobs, and using the location of the job as a key, we append job information.
-          values[1].forEach(job => {
-            result[job.getSuburb()]["jobs"] = result[job.getSuburb()]["jobs"] || [];
-            result[job.getSuburb()]["jobs"].push({
-              title: job.getTitle(),
-              link: job.getLink(),
-              content: entities.decode(job.getContent()),
-            });
-          });
+      Object.freeze(result);
 
-          Object.freeze(result);
+      // Provide the full HTML for each of the markers.
+      let rendered = Object.keys(result).map((suburbName) => {
+        return {
+          lat: result[suburbName].lat,
+          lng: result[suburbName].lng,
+          html: jobRenderer({
+            jobs: result[suburbName].jobs,
+            suburb: result[suburbName].suburb,
+            time: result[suburbName].duration,
+          }),
+        };
+      });
 
-          // Provide the full HTML for each of the markers.
-          let rendered = Object.keys(result).map((suburbName) => {
-            return {
-              lat: result[suburbName].lat,
-              lng: result[suburbName].lng,
-              html: jobRenderer({
-                jobs: result[suburbName].jobs,
-                suburb: result[suburbName].suburb,
-                time: result[suburbName].duration,
-              }),
-            };
-          });
-
-          res.json({
-            from: {
-              lat: homePoint.getLatitude(),
-              lon: homePoint.getLongitude(),
-            },
-            markers: rendered,
-          });
-        }).catch(e => console.log(e));
-
-      }).catch(e => console.log(e));
-
+      res.json({
+        from: {
+          lat: homePoint.getLatitude(),
+          lon: homePoint.getLongitude(),
+        },
+        markers: rendered,
+      });
 
     }).catch(e => console.log(e));
 
