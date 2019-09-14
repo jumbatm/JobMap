@@ -56,15 +56,29 @@ router.get('/', function (req, res, _) {
         const duration = durations[0][i];
         result[suburbName] = { lat: point.getLatitude(), lng: point.getLongitude(), duration: duration, };
       });
+      // Filter if a time limit exists on the request.
+      if (req.query.timeLimit != 0) {
+        console.log(req.query.timeLimit);
+        for (let key of Object.keys(result)) {
+          if (result[key].duration > req.query.timeLimit*60) {
+            delete result[key];
+          }
+        }
+      }
 
       // Now, we iterate through our jobs, and using the location of the job as a key, we append job information.
       values[1].forEach(job => {
-        result[job.getSuburb()]["jobs"] = result[job.getSuburb()]["jobs"] || [];
-        result[job.getSuburb()]["jobs"].push({
-          title: job.getTitle(),
-          link: job.getLink(),
-          content: entities.decode(job.getContent()),
-        });
+        if (result[job.getSuburb()]) {
+          result[job.getSuburb()]["jobs"] = result[job.getSuburb()]["jobs"] || [];
+          result[job.getSuburb()]["jobs"].push({
+            title: job.getTitle(),
+            link: job.getLink(),
+            content: entities.decode(job.getContent()),
+          });
+        } else {
+          // Remove the dummy entry, just created by that access.
+          delete result[job.getSuburb()];
+        }
       });
 
       Object.freeze(result);
@@ -90,7 +104,13 @@ router.get('/', function (req, res, _) {
         markers: rendered,
       });
 
-    }).catch(e => console.log(e));
+    }).catch(e => { 
+      console.trace(e);
+      res.status(401); 
+      res.json({
+        error: "Nothing found.",
+      }); 
+    });
 
 });
 

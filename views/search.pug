@@ -1,10 +1,16 @@
 script(src="/vendor/jquery/jquery.js")
-form(onsubmit="onFormSubmit(); return false;")
+form(id="searchform" onsubmit="onFormSubmit(); return false;")
     p Search for content:
     | Search query
     input(type="text" id="form_keywords" placeholder="")
     br
     | Your address
     input(type="text" id="form_address" placeholder="" required)
+    br
+    select(id="timelimit", form="searchform")
+        option(value=0) No limit
+        option(value=15) Less than 15 minutes
+        option(value=30) Less than 30 minutes
+        option(value=60) Less than an hour
     br
     input(type="submit" id="form_submit" )
