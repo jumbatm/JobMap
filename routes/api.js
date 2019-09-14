@@ -52,14 +52,13 @@ router.get('/', function (req, res, _) {
           values[1].forEach(job => {
             result[job.getSuburb()]["jobs"] = result[job.getSuburb()]["jobs"] || [];
             result[job.getSuburb()]["jobs"].push({
-              name: job.getName(),
-              position: job.getPosition(),
-              description: job.getDesc(),
+              title: job.getTitle(),
+              link: job.getLink(),
+              content: job.getContent(),
             });
           });
 
           Object.freeze(result);
-          console.log(result);
 
           // Provide the full HTML for each of the markers.
           let rendered = Object.keys(result).map((suburbName) => {

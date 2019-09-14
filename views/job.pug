@@ -2,6 +2,6 @@ h1 #{suburb}
 h2 #{Math.round(time / 60)} mins
 each job in jobs
     hr
-    h3 #{job.position}
-    h4 #{job.name}
-    p #{job.description}
+    h3 #{job.title}
+    p #{job.content}
+    a #{job.link}
