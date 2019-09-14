@@ -14,7 +14,7 @@ router.get('/', function(req, res, next) {
       latitude: point ? point.getLatitude() : DEFAULT_LATITUDE, 
       longitude: point ? point.getLongitude() : DEFAULT_LONGITUDE,
     });
-  }).catch(e => console.log("CAUGHT: " + e));
+  }).catch(e => next(e));
 });
 
 module.exports = router;
